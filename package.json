@@ -1,0 +1,25 @@
+{
+  "name": "soran-elevator-website",
+  "version": "2.0.0",
+  "description": "广州索然电梯配件有限公司官网 - Supabase 静态版 + GitHub Pages 部署",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "deploy": "npm run build:docs && npm run deploy:verify",
+    "build:docs": "node scripts/build-docs.js",
+    "deploy:verify": "echo '✅ docs/ 目录准备就绪' && echo '📋 推送步骤:' && echo '  1. git add docs/' && echo '  2. git commit -m \"Update GitHub Pages deployment\"' && echo '  3. git push origin main' && echo '  4. 在 GitHub Settings -> Pages 中设置 Source 为 main branch /docs folder'",
+    "setup": "echo '🔧 Supabase 设置步骤:' && echo '  1. 在 Supabase Dashboard 创建新项目' && echo '  2. 进入 SQL Editor 执行 supabase/schema.sql' && echo '  3. 在 Authentication -> Users 创建管理员账号' && echo '  4. 在 Table Editor -> admins 中插入管理员 UUID 和用户名' && echo '  5. 修改 public/js/supabase-client.js 填入项目 URL 和 anon key' && echo '  6. 在 Storage 中确认 images 存储桶已创建'"
+  },
+  "keywords": ["elevator", "parts", "soran", "website", "supabase", "github-pages"],
+  "author": "Soran Elevator Parts",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.4.3",
+    "multer": "^1.4.5-lts.1",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.6",
+    "bcryptjs": "^2.4.3"
+  }
+}

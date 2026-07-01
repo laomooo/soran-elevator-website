@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 · SORAN 索然电梯配件</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script defer src="../js/supabase-client.js"></script>
+</head>
+<body class="admin-body">
+
+<div class="admin-layout">
+<!-- ==================== Sidebar ==================== -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="../images/logo.png" alt="SORAN" class="soran-logo">
+        <span>索然管理后台</span>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <div class="sidebar-section-title">概览</div>
+        <a href="#" class="sidebar-link active" data-page="dashboard-page">
+            <span class="icon">📊</span> 仪表盘
+        </a>
+        
+        <div class="sidebar-section-title">内容管理</div>
+        <a href="#" class="sidebar-link" data-page="products-page">
+            <span class="icon">📦</span> 产品管理
+        </a>
+        <a href="#" class="sidebar-link" data-page="banners-page">
+            <span class="icon">🖼️</span> 轮播管理
+        </a>
+        <a href="#" class="sidebar-link" data-page="news-page">
+            <span class="icon">📰</span> 新闻动态
+        </a>
+        
+        <div class="sidebar-section-title">首页管理</div>
+        <a href="#" class="sidebar-link" data-page="editor-page">
+            <span class="icon">📐</span> 页面编辑
+        </a>
+        
+        <div class="sidebar-section-title">互动 & 设置</div>
+        <a href="#" class="sidebar-link" data-page="messages-page">
+            <span class="icon">💬</span> 留言管理
+            <span id="msg-badge" style="margin-left:auto;background:#EF4444;color:white;font-size:11px;padding:2px 7px;border-radius:10px;display:none;">0</span>
+        </a>
+        <a href="#" class="sidebar-link" data-page="settings-page">
+            <span class="icon">⚙️</span> 站点设置
+        </a>
+        
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-link" id="logout-btn">
+                <span class="icon">🚪</span> 退出登录
+            </a>
+        </div>
+    </nav>
+</aside>
+
+<!-- ==================== Main Content ==================== -->
+<main class="main-content">
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+            <button class="mobile-toggle" id="mobile-toggle">☰</button>
+            <img src="../images/logo.png" alt="SORAN" class="soran-logo" style="height:28px;">
+            <h2 id="page-title">仪表盘</h2>
+        </div>
+        <div class="topbar-user">
+            <div class="topbar-avatar" id="topbar-user-avatar">A</div>
+            <span id="topbar-user">Admin</span>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        
+        <!-- ============ Dashboard Page ============ -->
+        <div class="admin-page" id="dashboard-page">
+            <div class="stats-grid">
+                <div class="stat-card stat-card--blue">
+                    <div class="stat-card__header">
+                        <span class="stat-card__label">产品总数</span>
+                        <div class="stat-card__icon">📦</div>
+                    </div>
+                    <div class="stat-card__value" id="stat-products">--</div>
+                </div>
+                <div class="stat-card stat-card--green">
+                    <div class="stat-card__header">
+                        <span class="stat-card__label">产品分类</span>
+                        <div class="stat-card__icon">📁</div>
+                    </div>
+                    <div class="stat-card__value" id="stat-categories">--</div>
+                </div>
+                <div class="stat-card stat-card--orange">
+                    <div class="stat-card__header">
+                        <span class="stat-card__label">未读留言</span>
+                        <div class="stat-card__icon">💬</div>
+                    </div>
+                    <div class="stat-card__value" id="stat-messages">--</div>
+                </div>
+                <div class="stat-card stat-card--purple">
+                    <div class="stat-card__header">
+                        <span class="stat-card__label">总浏览量</span>
+                        <div class="stat-card__icon">👁️</div>
+                    </div>
+                    <div class="stat-card__value" id="stat-views">--</div>
+                </div>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:24px;">
+                <div class="admin-card">
+                    <div class="card-header"><h3>快捷操作</h3></div>
+                    <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <button onclick="showPage('products-page')" class="btn-admin btn--outline" style="justify-content:center;">➕ 添加产品</button>
+                        <button onclick="window.open('../','_blank')" class="btn-admin btn--outline" style="justify-content:center;">🌐 查看前台</button>
+                        <button onclick="showPage('settings-page')" class="btn-admin btn--outline" style="justify-content:center;">⚙️ 站点设置</button>
+                        <button onclick="showPage('messages-page')" class="btn-admin btn--outline" style="justify-content:center;">📬 查看留言</button>
+                    </div>
+                </div>
+                
+                <div class="admin-card">
+                    <div class="card-header"><h3>系统信息</h3></div>
+                    <div class="card-body">
+                        <table style="width:100%;font-size:13px;">
+                            <tr><td style="color:#64748B;padding:8px 0;">系统版本</td><td>v2.0.0</td></tr>
+                            <tr><td style="color:#64748B;padding:8px 0;">数据库</td><td>Supabase (PostgreSQL)</td></tr>
+                            <tr><td style="color:#64748B;padding:8px 0;">框架</td><td>纯静态 + Supabase BaaS</td></tr>
+                            <tr><td style="color:#64748B;padding:8px 0;">部署方式</td><td>GitHub Pages</td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Products Page ============ -->
+        <div class="admin-page" id="products-page" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>产品列表</h3>
+                    <button class="btn-admin btn--primary" onclick="openProductModal()">+ 添加产品</button>
+                </div>
+                <div class="card-body" style="overflow-x:auto;">
+                    <table class="data-table" id="products-table">
+                        <thead>
+                            <tr>
+                                <th>图片</th><th>名称/型号</th><th>分类</th>
+                                <th>状态</th><th>排序</th><th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:40px;"><div class="loading-spinner"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 分类管理（内嵌） -->
+            <div class="admin-card" style="margin-top:20px;">
+                <div class="card-header">
+                    <h3>📁 产品分类</h3>
+                    <button class="btn-admin btn--primary" onclick="openCategoryModal()">+ 添加分类</button>
+                </div>
+                <div class="card-body">
+                    <div id="categories-quick-list" style="display:flex;flex-wrap:wrap;gap:8px;">
+                        <span style="color:#94A3B8;">加载中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Modal -->
+            <div class="modal-overlay" id="category-modal" style="display:none;">
+                <div class="modal" style="max-width:450px;">
+                    <div class="modal-header">
+                        <h3 id="category-modal-title">添加分类</h3>
+                        <button class="modal-close" onclick="closeCatQuickModal()">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <form onsubmit="saveCatQuick(event)">
+                            <input type="hidden" id="cat-id">
+                            <div class="form-group">
+                                <label>分类名称 *</label>
+                                <input type="text" id="cat-name" required placeholder="例：电梯光幕">
+                            </div>
+                            <div class="form-group">
+                                <label>分类图 Emoji</label>
+                                <input type="text" id="cat-icon" value="📦" maxlength="4" style="text-align:center;font-size:24px;padding:6px;">
+                            </div>
+                            <div class="form-group">
+                                <label>排序</label>
+                                <input type="number" id="cat-sort" value="0" min="0">
+                            </div>
+                            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+                                <button type="submit" class="btn-admin btn--primary">保存</button>
+                                <button type="button" class="btn-admin btn--outline" onclick="closeCatQuickModal()">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Product Modal -->
+            <div class="modal-overlay" id="product-modal">
+                <div class="modal" style="max-width:720px;">
+                    <div class="modal-header">
+                        <h3 id="product-modal-title">添加产品</h3>
+                        <button class="modal-close" onclick="closeModal('product-modal')">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="product-form" onsubmit="saveProduct(event)">
+                            <input type="hidden" id="product-id">
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>产品名称 *</label>
+                                    <input type="text" id="p-name" required placeholder="例：红外线感应器 G1A1-609AB">
+                                </div>
+                                <div class="form-group">
+                                    <label>型号</label>
+                                    <input type="text" id="p-model" placeholder="例：G1A1-609AB">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>所属分类</label>
+                                    <select id="p-category"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>排序权重</label>
+                                    <input type="number" id="p-sort" value="0" min="0" max="9999">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>简短描述</label>
+                                <input type="text" id="p-short-desc" placeholder="一句话介绍该产品（显示在卡片上）">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>详细描述</label>
+                                <textarea id="p-full-desc" placeholder="产品的详细介绍，支持HTML富文本"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>主图上传</label>
+                                <input type="hidden" id="p-main-image-input" name="main_image">
+                                <div class="upload-area" onclick="document.getElementById('p-main-image-file').click()">
+                                    <div class="icon">📷</div>
+                                    <p>点击或拖拽上传主图</p>
+                                    <p style="font-size:12px;color:#94A3B8;margin-top:4px;">支持 JPG/PNG/GIF/WebP，最大 10MB</p>
+                                    <input type="file" id="p-main-image-file" accept="image/*" style="display:none;" onchange="handleSingleUpload(this,'p-main-image-input','p-main-preview')">
+                                </div>
+                                <div id="p-main-preview" class="upload-preview"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>产品相册（多图）</label>
+                                <input type="hidden" id="p-images-urls" name="image_urls">
+                                <div class="upload-area" onclick="document.getElementById('p-images-files').click()">
+                                    <div class="icon">🖼️</div>
+                                    <p>点击或拖拽上传多张图片</p>
+                                    <input type="file" id="p-images-files" accept="image/*" multiple style="display:none;" onchange="handleMultiUpload(this)">
+                                </div>
+                                <div id="p-images-preview" class="upload-preview"></div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="p-featured" style="width:auto;margin-right:6px;">
+                                        设为推荐产品
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="p-active" checked style="width:auto;margin-right:6px;">
+                                        启用上架
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer" style="border:none;padding:0;">
+                                <button type="submit" class="btn-admin btn--primary">保存产品</button>
+                                <button type="button" class="btn-admin btn--outline" onclick="closeModal('product-modal')">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Categories Page ============ -->
+        <div class="admin-page" id="categories-page" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>产品分类</h3>
+                    <button class="btn-admin btn--primary" onclick="openCategoryModal()">+ 添加分类</button>
+                </div>
+                <div class="card-body">
+                    <table class="data-table" id="categories-table">
+                        <thead><tr><th>ID</th><th>中文名</th><th>英文名</th><th>排序</th><th>状态</th><th>操作</th></tr></thead>
+                        <tbody id="categories-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Banners Page ============ -->
+        <div class="admin-page" id="banners-page" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>首页轮播/Banner</h3>
+                    <button class="btn-admin btn--primary" onclick="openBannerModal()">+ 添加轮播</button>
+                </div>
+                <div class="card-body">
+                    <div id="banner-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;"></div>
+                    <div class="empty-state" id="banner-empty" style="display:none;">
+                        <div class="icon">🖼️</div><p>暂无轮播图</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-overlay" id="banner-modal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3>添加轮播</h3>
+                        <button class="modal-close" onclick="closeModal('banner-modal')">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <form onsubmit="saveBanner(event)">
+                            <div class="form-group">
+                                <label>标题</label>
+                                <input type="text" id="b-title" placeholder="轮播主标题">
+                            </div>
+                            <div class="form-group">
+                                <label>副标题</label>
+                                <input type="text" id="b-subtitle" placeholder="轮播副标题">
+                            </div>
+                            <div class="form-group">
+                                <label>轮播图片 *</label>
+                                <input type="hidden" id="b-image-url">
+                                <div class="upload-area" onclick="document.getElementById('b-image-file').click()">
+                                    <div class="icon">📷</div><p>点击上传轮播图片</p>
+                                    <input type="file" id="b-image-file" accept="image/*" style="display:none;"
+                                           onchange="handleSingleUpload(this,'b-image-url','b-image-preview')">
+                                </div>
+                                <div id="b-image-preview" class="upload-preview"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>链接地址</label>
+                                <input type="text" id="b-link" placeholder="../products.html 或 #section-id">
+                            </div>
+                            <div class="form-group">
+                                <label>排序</label>
+                                <input type="number" id="b-sort" value="0" min="0">
+                            </div>
+                            <div class="modal-footer" style="border:none;padding:0;">
+                                <button type="submit" class="btn-admin btn--primary">保存</button>
+                                <button type="button" class="btn-admin btn--outline" onclick="closeModal('banner-modal')">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ News Page ============ -->
+        <div class="admin-page" id="news-page" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h3>新闻动态</h3>
+                    <button class="btn-admin btn--primary" onclick="openNewsModal()">+ 发布新闻</button>
+                </div>
+                <div class="card-body">
+                    <table class="data-table">
+                        <thead><tr><th>封面</th><th>标题</th><th>摘要</th><th>时间</th><th>状态</th><th>操作</th></tr></thead>
+                        <tbody id="news-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-overlay" id="news-modal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3 id="news-modal-title">发布新闻</h3>
+                        <button class="modal-close" onclick="closeModal('news-modal')">✕</button>
+                    </div>
+                    <div class="modal-body">
+                        <form onsubmit="saveNews(event)">
+                            <input type="hidden" id="news-id">
+                            <div class="form-group">
+                                <label>标题 *</label>
+                                <input type="text" id="n-title" required placeholder="新闻标题">
+                            </div>
+                            <div class="form-group">
+                                <label>摘要</label>
+                                <input type="text" id="n-summary" placeholder="简短摘要（用于列表展示）">
+                            </div>
+                            <div class="form-group">
+                                <label>内容</label>
+                                <textarea id="n-content" rows="6" placeholder="新闻正文内容..."></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>封面图片</label>
+                                    <input type="hidden" id="n-cover-url">
+                                    <div class="upload-area" onclick="document.getElementById('n-cover-file').click()">
+                                        <div class="icon">📷</div><p>点击上传封面</p>
+                                        <input type="file" id="n-cover-file" accept="image/*" style="display:none;"
+                                               onchange="handleSingleUpload(this,'n-cover-url','n-cover-preview')">
+                                    </div>
+                                    <div id="n-cover-preview" class="upload-preview"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="n-active" checked style="width:auto;margin-right:6px;">
+                                        发布（取消勾选则为草稿）
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="border:none;padding:0;">
+                                <button type="submit" class="btn-admin btn--primary">保存</button>
+                                <button type="button" class="btn-admin btn--outline" onclick="closeModal('news-modal')">取消</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Messages Page ============ -->
+        <div class="admin-page" id="messages-page" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header"><h3>客户留言</h3></div>
+                <div class="card-body">
+                    <table class="data-table">
+                        <thead><tr><th>姓名</th><th>电话/邮箱</th><th>公司</th><th>内容</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+                        <tbody id="messages-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Settings Page ============ -->
+        <div class="admin-page" id="settings-page" style="display:none;">
+            <div class="admin-card">
+                <div class="card-header"><h3>站点设置</h3></div>
+                <div class="card-body" style="max-width:700px;">
+                    <form id="settings-form" onsubmit="saveSettings(event)">
+                        <h4 style="font-size:15px;font-weight:600;margin-bottom:16px;border-bottom:1px solid var(--admin-border);padding-bottom:8px;">基本信息</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>公司名称（中文）</label>
+                                <input type="text" id="s-company-zh" value="广州索然电梯配件有限公司">
+                            </div>
+                            <div class="form-group">
+                                <label>公司名称（英文）</label>
+                                <input type="text" id="s-company-en" value="Guangzhou Soran Elevator Parts Co., Ltd.">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>品牌口号</label>
+                                <input type="text" id="s-slogan" value="科技绿色 服务生活">
+                            </div>
+                            <div class="form-group">
+                                <label>Slogan (English)</label>
+                                <input type="text" id="s-slogan-en" value="Technology Green, Serving Life">
+                            </div>
+                        </div>
+
+                        <h4 style="font-size:15px;font-weight:600;margin:28px 0 16px;border-bottom:1px solid var(--admin-border);padding-bottom:8px;">联系方式</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>联系电话</label>
+                                <input type="text" id="s-phone" placeholder="020-xxxxxxx">
+                            </div>
+                            <div class="form-group">
+                                <label>电子邮箱</label>
+                                <input type="email" id="s-email" placeholder="contact@soran.com">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>微信</label>
+                                <input type="text" id="s-wechat" placeholder="微信号">
+                            </div>
+                            <div class="form-group">
+                                <label>公司地址</label>
+                                <input type="text" id="s-address" placeholder="广东省广州市...">
+                            </div>
+                        </div>
+
+                        <h4 style="font-size:15px;font-weight:600;margin:28px 0 16px;border-bottom:1px solid var(--admin-border);padding-bottom:8px;">关于我们</h4>
+                        
+                        <div class="form-group">
+                            <label>公司简介（中文）</label>
+                            <textarea id="s-about" rows="5" placeholder="关于公司的详细描述..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Logo 图片 URL</label>
+                            <input type="text" id="s-logo" value="../images/logo.png" placeholder="../images/logo.png">
+                            <small style="color:#94A3B8;font-size:12px;">可通过文件管理上传Logo后填入URL</small>
+                        </div>
+                        <div class="form-group">
+                            <label>ICP备案号</label>
+                            <input type="text" id="s-icp" placeholder="粤ICP备xxxxxxxx号">
+                        </div>
+
+                        <button type="submit" class="btn-admin btn--primary" style="margin-top:16px;">保存设置</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ Unified Page Editor ============ -->
+        <div class="admin-page" id="editor-page" style="display:none;">
+            <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;">
+                <!-- 左侧：区域选择器 -->
+                <div class="admin-card">
+                    <div class="card-header"><h3>📐 选择区域</h3></div>
+                    <div class="card-body" style="padding:12px;">
+                        <div id="section-tabs" style="display:flex;flex-direction:column;gap:4px;">
+                            <!-- JS 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：编辑面板 -->
+                <div>
+                    <div class="admin-card" style="margin-bottom:20px;">
+                        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                            <h3 id="style-section-name">🏠 首屏大图</h3>
+                            <div id="editor-tab-bar" style="display:flex;gap:4px;">
+                                <!-- JS 动态生成：内容/背景 tab -->
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- 内容面板 -->
+                            <div id="panel-content" style="display:none;"></div>
+                            <!-- 文字样式面板 -->
+                            <div id="panel-textstyle" style="display:none;"></div>
+                            <!-- 背景面板 -->
+                            <div id="panel-background"></div>
+                        </div>
+                    </div>
+
+                    <!-- 实时预览 -->
+                    <div class="admin-card" style="margin-bottom:20px;">
+                        <div class="card-header"><h3>👁️ 实时预览</h3></div>
+                        <div class="card-body">
+                            <div id="style-preview-box" style="height:160px;border-radius:12px;border:1px solid #E2E8F0;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,0.3);transition:all 0.3s ease;">
+                                🏠 首屏大图 · 预览
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div style="display:flex;gap:10px;">
+                        <button type="button" class="btn-admin btn--primary" onclick="saveEditorSection()" style="flex:1;">💾 保存全部修改</button>
+                        <button type="button" class="btn-admin btn--outline" onclick="resetEditorSection()">↺ 恢复默认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Card Modal（全局弹窗） -->
+        <div class="modal-overlay" id="feature-modal" style="display:none;">
+            <div class="modal" style="max-width:500px;">
+                <div class="modal-header">
+                    <h3 id="feature-modal-title">添加特色卡片</h3>
+                    <button class="modal-close" onclick="closeFeatureModal()">✕</button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="saveFeatureCard(event)">
+                        <input type="hidden" id="feat-id">
+                        <div class="form-row">
+                            <div class="form-group" style="flex:0 0 80px;">
+                                <label>图标</label>
+                                <input type="text" id="feat-icon" value="⭐" maxlength="4" style="text-align:center;font-size:24px;padding:6px;">
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label>标题 *</label>
+                                <input type="text" id="feat-title" required placeholder="卡片标题">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>描述</label>
+                            <textarea id="feat-desc" rows="3" placeholder="卡片描述文字"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>排序</label>
+                                <input type="number" id="feat-sort" value="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label style="display:flex;align-items:center;gap:6px;">
+                                    <input type="checkbox" id="feat-active" checked style="width:auto;"> 启用
+                                </label>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+                            <button type="submit" class="btn-admin btn--primary">保存</button>
+                            <button type="button" class="btn-admin btn--outline" onclick="closeFeatureModal()">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /.page-content -->
+</main>
+</div><!-- /.admin-layout -->
+
+<script defer src="js/admin.js"></script>
+<script>
+// ==================== Helper Functions ====================
+function showPage(pageId) {
+    document.querySelectorAll('.admin-page').forEach(p => p.style.display = 'none');
+    const page = document.getElementById(pageId);
+    if (page) { page.style.display = ''; }
+    // Update sidebar active state
+    document.querySelectorAll('.sidebar-link[data-page]').forEach(l => l.classList.remove('active'));
+    const activeLink = document.querySelector(`[data-page="${pageId}"]`);
+    if (activeLink) activeLink.classList.add('active');
+    // Use data-title attribute or clean text for page title
+    const pageTitleMap = {
+        'dashboard-page': '仪表盘', 'products-page': '产品管理',
+        'banners-page': '轮播管理', 'news-page': '新闻动态', 'editor-page': '页面编辑',
+        'messages-page': '留言管理', 'settings-page': '站点设置'
+    };
+    document.getElementById('page-title').textContent = pageTitleMap[pageId] || (activeLink?.textContent?.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}]/gu,'').trim()) || '';
+    
+    // Load page-specific data
+    if (pageId === 'dashboard-page') loadStats();
+    if (pageId === 'products-page') { loadProducts(); loadCategoriesQuick(); }
+    if (pageId === 'banners-page') loadBanners();
+    if (pageId === 'news-page') loadNews();
+    if (pageId === 'messages-page') loadMessages();
+    if (pageId === 'settings-page') loadSettings();
+    if (pageId === 'editor-page') loadEditor();
+
+    // Close mobile sidebar
+    document.querySelector('.sidebar')?.classList.remove('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ==================== File Upload Helpers ====================
+async function handleSingleUpload(fileInput, urlFieldId, previewContainerId) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    
+    try {
+        const url = await uploadToStorage(file);
+        
+        if (url) {
+            document.getElementById(urlFieldId).value = url;
+            const preview = document.getElementById(previewContainerId);
+            preview.innerHTML = `<div class="upload-preview upload-remove" onclick="this.parentElement.innerHTML='';document.getElementById('${urlFieldId}').value='';">
+                <img src="${url}" alt="预览" style="max-height:120px;"></div>`;
+            toast('上传成功');
+        } else {
+            toast('上传失败', 'error');
+        }
+    } catch(e) { toast('网络错误', 'error'); }
+}
+
+let multiImageUrls = [];
+async function handleMultiUpload(fileInput) {
+    const files = fileInput.files;
+    if (!files.length) return;
+
+    for (const file of files) {
+        try {
+            const url = await uploadToStorage(file);
+            if (url) multiImageUrls.push(url);
+        } catch(e) {}
+    }
+    
+    renderMultiPreview();
+    document.getElementById('p-images-urls').value = JSON.stringify(multiImageUrls);
+}
+
+function renderMultiPreview() {
+    const container = document.getElementById('p-images-preview');
+    container.innerHTML = multiImageUrls.map((url, i) =>
+        `<div class="upload-preview upload-remove" onclick="multiImageUrls.splice(${i},1);renderMultiPreview();document.getElementById('p-images-urls').value=JSON.stringify(multiImageUrls);">
+         <img src="${url}"></div>`
+    ).join('');
+}
+
+// ==================== Products Management ====================
+async function loadProducts() {
+    const res = await api('/products?limit=100');
+    const tbody = document.getElementById('products-tbody');
+    if (!res.success || !res.data?.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">暂无产品</div></td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = res.data.map(p => `
+        <tr>
+            <td><img src="${p.main_image||''}" alt="" class="table-img" onerror="this.style.display='none'"></td>
+            <td><strong>${p.name}</strong><br><small style="color:#94A3B8">${p.model_number||'-'}</small></td>
+            <td>${p.category_name||'-'}</td>
+            <td><span class="badge ${p.is_active?'badge--active':'badge--inactive'}">${p.is_active?'启用':'下架'}</span></td>
+            <td>${p.sort_order||0}</td>
+            <td>
+                <button class="btn-admin btn--sm btn--outline" onclick="editProduct(${p.id})">编辑</button>
+                <button class="btn-admin btn--sm btn--danger" onclick="deleteItem('products',${p.id})">删除</button>
+            </td>
+        </tr>`).join('');
+}
+
+async function openProductModal(id = null) {
+    document.getElementById('product-modal-title').textContent = id ? '编辑产品' : '添加产品';
+    document.getElementById('product-id').value = id || '';
+    document.getElementById('product-form').reset();
+    document.getElementById('p-main-image-input').value = '';
+    document.getElementById('p-images-urls').value = '[]';
+    document.getElementById('p-main-preview').innerHTML = '';
+    document.getElementById('p-images-preview').innerHTML = '';
+    multiImageUrls = [];
+
+    // Load categories for dropdown
+    const catRes = await api('/categories');
+    const select = document.getElementById('p-category');
+    select.innerHTML = '<option value="">选择分类...</option>' +
+        (catRes.data||[]).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+    if (id) {
+        const res = await api(`/products/${id}`);
+        if (res.success && res.data) {
+            const p = res.data;
+            document.getElementById('p-name').value = p.name;
+            document.getElementById('p-model').value = p.model_number || '';
+            document.getElementById('p-category').value = p.category_id || '';
+            document.getElementById('p-sort').value = p.sort_order || 0;
+            document.getElementById('p-short-desc').value = p.short_desc || '';
+            document.getElementById('p-full-desc').value = p.full_desc || '';
+            document.getElementById('p-featured').checked = !!p.is_featured;
+            document.getElementById('p-active').checked = !!p.is_active;
+
+            if (p.main_image) {
+                document.getElementById('p-main-image-input').value = p.main_image;
+                document.getElementById('p-main-preview').innerHTML =
+                    `<div class="upload-preview upload-remove" onclick="document.getElementById('p-main-image-input').value='';this.parentElement.innerHTML='';">
+                     <img src="${p.main_image}" style="max-height:100px;"></div>`;
+            }
+
+            try {
+                if (Array.isArray(p.image_urls)) {
+                    multiImageUrls = p.image_urls;
+                } else if (typeof p.image_urls === 'string') {
+                    multiImageUrls = JSON.parse(p.image_urls) || [];
+                } else {
+                    multiImageUrls = [];
+                }
+            }
+            catch(e) { multiImageUrls = []; }
+            renderMultiPreview();
+            document.getElementById('p-images-urls').value = JSON.stringify(multiImageUrls);
+        }
+    }
+
+    document.getElementById('product-modal').classList.add('show');
+}
+
+async function editProduct(id) { openProductModal(id); }
+
+async function saveProduct(e) {
+    e.preventDefault();
+    const id = document.getElementById('product-id').value;
+    const payload = {
+        name: document.getElementById('p-name').value,
+        model_number: document.getElementById('p-model').value,
+        category_id: document.getElementById('p-category').value || null,
+        sort_order: parseInt(document.getElementById('p-sort').value) || 0,
+        short_desc: document.getElementById('p-short-desc').value,
+        full_desc: document.getElementById('p-full-desc').value,
+        main_image: document.getElementById('p-main-image-input').value,
+        image_urls: multiImageUrls,
+        is_featured: document.getElementById('p-featured').checked ? 1 : 0,
+        is_active: document.getElementById('p-active').checked ? 1 : 0
+    };
+
+    let res;
+    if (id) {
+        res = await api(`/products/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    } else {
+        res = await api('/products', { method: 'POST', body: JSON.stringify(payload) });
+    }
+
+    toast(res.message || (id ? '更新成功！' : '创建成功！'));
+    if (res.success) {
+        closeModal('product-modal');
+        loadProducts();
+        loadStats();
+    }
+}
+
+// ==================== Categories Management ====================
+async function loadCategories() {
+    const res = await api('/categories');
+    const tbody = document.getElementById('categories-tbody');
+    tbody.innerHTML = (res.data||[]).map(c => `
+        <tr>
+            <td>${c.id}</td><td>${c.name}</td><td>${c.name_en||'-'}</td>
+            <td>${c.sort_order||0}</td>
+            <td><span class="badge ${c.is_active?'badge--active':'badge--inactive'}">${c.is_active?'启用':'禁用'}</span></td>
+            <td>
+                <button class="btn-admin btn--sm btn--outline" onclick="editCategory(${c.id})">编辑</button>
+                <button class="btn-admin btn--sm btn--danger" onclick="deleteItem('categories',${c.id})">删除</button>
+            </td>
+        </tr>`).join('');
+}
+
+function openCategoryModal(id = null) {
+    document.getElementById('cat-modal-title').textContent = id ? '编辑分类' : '添加分类';
+    document.getElementById('cat-id').value = id || '';
+    document.getElementById('category-form')?.reset();
+    
+    if (id) {
+        api('/categories').then(res => {
+            if (res.success) {
+                const c = res.data.find(x => x.id == id);
+                if (c) {
+                    document.getElementById('cat-name').value = c.name;
+                    document.getElementById('cat-name-en').value = c.name_en || '';
+                    document.getElementById('cat-desc').value = c.description || '';
+                    document.getElementById('cat-sort').value = c.sort_order || 0;
+                }
+            }
+        });
+    }
+    
+    document.getElementById('category-modal').classList.add('show');
+}
+function editCategory(id) { openCategoryModal(id); }
+function editBanner(id) { openBannerModal(id); }
+
+async function saveCategory(e) {
+    e.preventDefault();
+    const id = document.getElementById('cat-id').value;
+    const payload = {
+        name: document.getElementById('cat-name').value,
+        name_en: document.getElementById('cat-name-en').value,
+        description: document.getElementById('cat-desc').value,
+        sort_order: parseInt(document.getElementById('cat-sort').value) || 0
+    };
+
+    let res;
+    if (id) { res = await api(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(payload) }); }
+    else { res = await api('/categories', { method: 'POST', body: JSON.stringify(payload) }); }
+
+    toast(res.message || '操作成功！');
+    if (res.success) { closeModal('category-modal'); loadCategories(); loadStats(); }
+}
+
+// ==================== Quick Category Management (in Products page) ====================
+async function loadCategoriesQuick() {
+    const res = await api('/categories');
+    const el = document.getElementById('categories-quick-list');
+    if (!el) return;
+    if (!res.success || !res.data?.length) {
+        el.innerHTML = '<span style="color:#94A3B8;">暂无分类，点击"添加分类"创建</span>';
+        return;
+    }
+    el.innerHTML = res.data.map(c => `
+        <div style="display:flex;align-items:center;gap:6px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:6px 12px;font-size:13px;">
+            <span>${c.name||'(未命名)'}</span>
+            <span style="font-size:10px;color:#94A3B8;">#${c.id}</span>
+            <button class="btn-admin btn--sm btn--outline" onclick="openCatQuickModal(${c.id})" style="padding:2px 8px;font-size:11px;">编辑</button>
+            <button class="btn-admin btn--sm btn--danger" onclick="deleteCatQuick(${c.id})" style="padding:2px 8px;font-size:11px;">×</button>
+        </div>
+    `).join('');
+}
+
+function openCatQuickModal(id) {
+    document.getElementById('cat-id').value = id || '';
+    document.getElementById('cat-name').value = '';
+    document.getElementById('cat-icon').value = '📦';
+    document.getElementById('cat-sort').value = '0';
+    document.getElementById('category-modal-title').textContent = id ? '编辑分类' : '添加分类';
+    if (id) {
+        api('/categories').then(res => {
+            if (res.success) {
+                const c = res.data.find(x => x.id == id);
+                if (c) {
+                    document.getElementById('cat-name').value = c.name || '';
+                    document.getElementById('cat-icon').value = c.icon_emoji || '📦';
+                    document.getElementById('cat-sort').value = c.sort_order || 0;
+                }
+            }
+        });
+    }
+    document.getElementById('category-modal').style.display = 'flex';
+}
+
+function closeCatQuickModal() {
+    document.getElementById('category-modal').style.display = 'none';
+}
+
+async function saveCatQuick(e) {
+    e.preventDefault();
+    const id = document.getElementById('cat-id').value;
+    const payload = {
+        name: document.getElementById('cat-name').value,
+        icon_emoji: document.getElementById('cat-icon').value || '📦',
+        sort_order: parseInt(document.getElementById('cat-sort').value) || 0,
+        is_active: 1
+    };
+    try {
+        let res;
+        if (id) { res = await api('/categories/'+id, { method:'PUT', body: JSON.stringify(payload) }); }
+        else { res = await api('/categories', { method:'POST', body: JSON.stringify(payload) }); }
+        if (res.success) { toast(id ? '分类已更新' : '分类已创建'); closeCatQuickModal(); loadCategoriesQuick(); }
+    } catch(e) { toast('操作失败', 'error'); }
+}
+
+async function deleteCatQuick(id) {
+    if (!confirm('确定删除此分类？关联产品将变为未分类。')) return;
+    try {
+        await api('/categories/'+id, { method:'DELETE' });
+        toast('分类已删除');
+        loadCategoriesQuick();
+    } catch(e) { toast('删除失败', 'error'); }
+}
+
+// ==================== Banners Management ====================
+async function loadBanners() {
+    const res = await api('/banners');
+    const listEl = document.getElementById('banner-list');
+    const emptyEl = document.getElementById('banner-empty');
+
+    if (!res.success || !res.data?.length) {
+        listEl.innerHTML = ''; emptyEl.style.display = ''; return;
+    }
+
+    emptyEl.style.display = 'none';
+    listEl.innerHTML = res.data.map(b => `
+        <div style="background:white;border-radius:12px;overflow:hidden;border:1px solid var(--admin-border);">
+            <img src="${b.image_url}" style="width:100%;aspect-ratio:21/9;object-fit:cover;">
+            <div style="padding:14px;">
+                <strong style="font-size:14px;">${b.title||'(未命名)'}</strong>
+                <p style="font-size:12px;color:#94A3B8;margin-top:4px;">${b.subtitle||''}</p>
+                <div style="margin-top:10px;display:flex;gap:8px;">
+                    <button class="btn-admin btn--sm btn--outline" onclick="editBanner(${b.id})">编辑</button>
+                    <button class="btn-admin btn--sm btn--danger" onclick="deleteItem('banners',${b.id})">删除</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function openBannerModal(id = null) {
+    document.getElementById('banner-modal-title')?.remove();
+    const titleEl = document.getElementById('banner-modal').querySelector('.modal-header h3');
+    if (titleEl) titleEl.textContent = id ? '编辑轮播' : '添加轮播';
+    
+    // Reset form
+    document.getElementById('banner-modal').querySelectorAll('input').forEach(i => {
+        if (i.type !== 'number' && i.type !== 'hidden') i.value = '';
+        else if (i.type === 'number') i.value = 0;
+    });
+    document.getElementById('b-image-url').value = '';
+    document.getElementById('b-image-preview').innerHTML = '';
+    
+    if (id) {
+        api('/banners').then(res => {
+            if (res.success) {
+                const b = res.data.find(x => x.id == id);
+                if (b) {
+                    document.getElementById('b-title').value = b.title || '';
+                    document.getElementById('b-subtitle').value = b.subtitle || '';
+                    document.getElementById('b-image-url').value = b.image_url || '';
+                    document.getElementById('b-link').value = b.link_url || '';
+                    document.getElementById('b-sort').value = b.sort_order || 0;
+                    if (b.image_url) {
+                        document.getElementById('b-image-preview').innerHTML =
+                            `<div class="upload-preview"><img src="${b.image_url}" style="max-height:80px;"></div>`;
+                    }
+                }
+            }
+        });
+    }
+    
+    // Store editing ID in a hidden field
+    let idField = document.getElementById('banner-id');
+    if (!idField) {
+        idField = document.createElement('input');
+        idField.type = 'hidden';
+        idField.id = 'banner-id';
+        document.getElementById('banner-modal').querySelector('form')?.appendChild(idField);
+    }
+    idField.value = id || '';
+    
+    document.getElementById('banner-modal').classList.add('show');
+}
+
+async function saveBanner(e) {
+    e.preventDefault();
+    const imageUrl = document.getElementById('b-image-url').value;
+    if (!imageUrl) return toast('请上传轮播图片', 'error');
+
+    const id = document.getElementById('banner-id')?.value;
+    const payload = {
+        title: document.getElementById('b-title').value,
+        subtitle: document.getElementById('b-subtitle').value,
+        image_url: imageUrl,
+        link_url: document.getElementById('b-link').value,
+        sort_order: parseInt(document.getElementById('b-sort').value) || 0
+    };
+
+    let res;
+    if (id) {
+        res = await api(`/banners/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+    } else {
+        res = await api('/banners', { method: 'POST', body: JSON.stringify(payload) });
+    }
+
+    toast(res.message || (id ? '更新成功！' : '创建成功！'));
+    if (res.success) { closeModal('banner-modal'); loadBanners(); }
+}
+
+// ==================== News Management ====================
+async function loadNews() {
+    const res = await api('/news');
+    document.getElementById('news-tbody').innerHTML = (res.data||[]).map(n => `
+        <tr>
+            <td>${n.cover_image?'<img src="'+n.cover_image+'" class="table-img">':'-'}</td>
+            <td><strong>${n.title}</strong></td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(n.summary||'').substring(0,50)}</td>
+            <td>${new Date(n.created_at).toLocaleDateString()}</td>
+            <td><span class="badge ${n.is_active?'badge--active':'badge--inactive'}">${n.is_active?'发布':'草稿'}</span></td>
+            <td>
+                <button class="btn-admin btn--sm btn--outline" onclick="editNews(${n.id})">编辑</button>
+                <button class="btn-admin btn--sm btn--danger" onclick="deleteItem('news',${n.id})">删除</button>
+            </td>
+        </tr>`).join('');
+}
+
+function openNewsModal(id = null) {
+    document.getElementById('news-modal-title').textContent = id ? '编辑新闻' : '发布新闻';
+    document.getElementById('news-id').value = id || '';
+    document.getElementById('news-modal').querySelectorAll('input:not([type=hidden]),textarea').forEach(i => i.value = '');
+    document.getElementById('n-cover-url').value = '';
+    document.getElementById('n-cover-preview').innerHTML = '';
+
+    if (id) {
+        api('/news').then(res => {
+            if (res.success) {
+                const n = res.data.find(x => x.id == id);
+                if (n) {
+                    document.getElementById('n-title').value = n.title;
+                    document.getElementById('n-summary').value = n.summary || '';
+                    document.getElementById('n-content').value = n.content || '';
+                    document.getElementById('n-active').checked = !!n.is_active;
+                    if (n.cover_image) {
+                        document.getElementById('n-cover-url').value = n.cover_image;
+                        document.getElementById('n-cover-preview').innerHTML =
+                            `<div class="upload-preview"><img src="${n.cover_image}" style="max-height:80px;"></div>`;
+                    }
+                }
+            }
+        });
+    } else {
+        document.getElementById('n-active').checked = true;
+    }
+    document.getElementById('news-modal').classList.add('show');
+}
+function editNews(id) { openNewsModal(id); }
+
+async function saveNews(e) {
+    e.preventDefault();
+    const id = document.getElementById('news-id').value;
+    const payload = {
+        title: document.getElementById('n-title').value,
+        summary: document.getElementById('n-summary').value,
+        content: document.getElementById('n-content').value,
+        cover_image: document.getElementById('n-cover-url').value,
+        is_active: document.getElementById('n-active').checked ? 1 : 0
+    };
+
+    let res;
+    if (id) { res = await api(`/news/${id}`, { method: 'PUT', body: JSON.stringify(payload) }); }
+    else { res = await api('/news', { method: 'POST', body: JSON.stringify(payload) }); }
+
+    toast(res.message || '保存成功！');
+    if (res.success) { closeModal('news-modal'); loadNews(); }
+}
+
+// ==================== Messages Management ====================
+async function loadMessages() {
+    const res = await api('/messages');
+    document.getElementById('messages-tbody').innerHTML = (res.data||[]).map(m => `
+        <tr>
+            <td><strong>${escapeHtml(m.name||'匿名')}</strong></td>
+            <td>${escapeHtml(m.phone||'-')}<br>${escapeHtml(m.email||'')}</td>
+            <td>${escapeHtml(m.company||'-')}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml((m.content||'').substring(0,60))}</td>
+            <td><span class="badge ${m.status==='unread'?'badge--unread':'badge--active'}">${m.status==='unread'?'未读':'已读'}</span></td>
+            <td>${new Date(m.created_at).toLocaleString()}</td>
+            <td>
+                ${m.status==='unread'?`<button class="btn-admin btn--sm btn--outline" onclick="markRead(${m.id})">标为已读</button>`:''}
+                <button class="btn-admin btn--sm btn--danger" onclick="deleteItem('messages',${m.id})">删除</button>
+            </td>
+        </tr>`).join('');
+
+    // Update badge
+    const unreadCount = (res.data||[]).filter(m=>m.status==='unread').length;
+    const badge = document.getElementById('msg-badge');
+    if (unreadCount > 0) { badge.textContent = unreadCount; badge.style.display = ''; }
+    else { badge.style.display = 'none'; }
+}
+
+async function markRead(id) {
+    const res = await api(`/messages/${id}/read`, { method: 'PATCH' });
+    if (res.success) { toast('已标记为已读'); loadMessages(); }
+}
+
+// ==================== Settings ====================
+async function loadSettings() {
+    const res = await api('/config');
+    if (res.success && res.data) {
+        const c = res.data;
+        document.getElementById('s-company-zh').value = c.company_name || '';
+        document.getElementById('s-company-en').value = c.company_name_en || '';
+        document.getElementById('s-slogan').value = c.slogan || '';
+        document.getElementById('s-slogan-en').value = c.slogan_en || '';
+        document.getElementById('s-phone').value = c.phone || '';
+        document.getElementById('s-email').value = c.email || '';
+        document.getElementById('s-wechat').value = c.wechat || '';
+        document.getElementById('s-address').value = c.address || '';
+        document.getElementById('s-about').value = c.about_text || '';
+        document.getElementById('s-logo').value = c.logo_url || '../images/logo.png';
+        document.getElementById('s-icp').value = c.icp || '';
+    }
+}
+
+async function saveSettings(e) {
+    e.preventDefault();
+    const res = await api('/config', {
+        method: 'PUT',
+        body: JSON.stringify({
+            company_name: document.getElementById('s-company-zh').value,
+            company_name_en: document.getElementById('s-company-en').value,
+            slogan: document.getElementById('s-slogan').value,
+            slogan_en: document.getElementById('s-slogan-en').value,
+            phone: document.getElementById('s-phone').value,
+            email: document.getElementById('s-email').value,
+            wechat: document.getElementById('s-wechat').value,
+            address: document.getElementById('s-address').value,
+            about_text: document.getElementById('s-about').value,
+            logo_url: document.getElementById('s-logo').value,
+            icp: document.getElementById('s-icp').value
+        })
+    });
+    toast(res.message || '设置保存成功！');
+}
+
+// ==================== Delete Item ====================
+async function deleteItem(type, id) {
+    if (!confirm('确定要删除吗？此操作不可恢复。')) return;
+    
+    const res = await api(`/${type}/${id}`, { method: 'DELETE' });
+    toast(res.message || '删除成功');
+
+    if (type === 'products') loadProducts();
+    if (type === 'categories') loadCategories();
+    if (type === 'banners') loadBanners();
+    if (type === 'news') loadNews();
+    if (type === 'messages') loadMessages();
+    loadStats();
+}
+
+// Initialize - check auth and load default page
+document.addEventListener('DOMContentLoaded', async () => {
+    // Set avatar letter
+    if (currentUser?.username) {
+        document.getElementById('topbar-user-avatar').textContent = currentUser.username.charAt(0).toUpperCase();
+    }
+
+    // Load dashboard by default
+    loadStats();
+});
+</script>
+</body>
+</html>

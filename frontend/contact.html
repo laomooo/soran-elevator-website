@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>联系我们 - SORAN 索然电梯配件</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+</head>
+<body>
+
+<header class="header" id="header">
+    <div class="header-inner">
+        <a href="/" class="header-logo"><img src="/images/logo.png" alt="SORAN"><span>SORAN</span></a>
+        <nav class="header-nav"><a href="/">首页</a><a href="/products">产品中心</a><a href="/about">关于索然</a><a href="/contact" class="active">联系我们</a></nav>
+        <div class="menu-toggle"><span></span><span></span><span></span></div>
+    </div>
+</header>
+<div class="mobile-nav"><a href="/">首页</a><a href="/products">产品中心</a><a href="/about">关于索然</a><a href="/contact">联系我们</a></div>
+
+<section class="page-header">
+    <h1>联系我们</h1>
+    <p>期待您的来信，我们将竭诚为您服务</p>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="contact-grid">
+            <!-- Contact Info -->
+            <div class="fade-in">
+                <h2 class="text-subtitle" style="margin-bottom:28px;">联系方式</h2>
+                
+                <div class="contact-info-item" id="ci-phone">
+                    <div class="icon">📞</div>
+                    <div>
+                        <strong style="display:block;font-size:15px;color:var(--color-text-primary);margin-bottom:2px;">电话咨询</strong>
+                        <span id="contact-phone" class="text-body">--</span>
+                    </div>
+                </div>
+                
+                <div class="contact-info-item" id="ci-email">
+                    <div class="icon">✉️</div>
+                    <div>
+                        <strong style="display:block;font-size:15px;color:var(--color-text-primary);margin-bottom:2px;">电子邮箱</strong>
+                        <span id="contact-email" class="text-body">--</span>
+                    </div>
+                </div>
+                
+                <div class="contact-info-item" id="ci-address">
+                    <div class="icon">📍</div>
+                    <div>
+                        <strong style="display:block;font-size:15px;color:var(--color-text-primary);margin-bottom:2px;">公司地址</strong>
+                        <span id="contact-address" class="text-body">--</span>
+                    </div>
+                </div>
+
+                <div class="contact-info-item" id="ci-wechat">
+                    <div class="icon">💬</div>
+                    <div>
+                        <strong style="display:block;font-size:15px;color:var(--color-text-primary);margin-bottom:2px;">微信</strong>
+                        <span id="contact-wechat" class="text-body">--</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:32px;padding:28px;background:var(--color-accent-pale);border-radius:var(--radius-md);">
+                    <strong style="font-size:15px;display:block;margin-bottom:8px;">💡 服务时间</strong>
+                    <p style="font-size:14px;color:var(--color-text-secondary);line-height:1.7;">
+                        周一至周五：9:00 - 18:00<br>
+                        周六：9:00 - 12:00<br>
+                        节假日：预约制服务
+                    </p>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form fade-in-delay-1 fade-in">
+                <h2 class="text-subtitle" style="margin-bottom:24px;">在线留言</h2>
+                
+                <form id="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="msg-name">姓名 *</label>
+                        <input type="text" id="msg-name" name="name" required placeholder="请输入您的姓名">
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                        <div class="form-group">
+                            <label for="msg-phone">联系电话 *</label>
+                            <input type="tel" id="msg-phone" name="phone" required placeholder="请输入手机号码">
+                        </div>
+                        <div class="form-group">
+                            <label for="msg-email">电子邮箱</label>
+                            <input type="email" id="msg-email" name="email" placeholder="example@email.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="msg-company">公司名称</label>
+                        <input type="text" id="msg-company" name="company" placeholder="您所在的公司（选填）">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="msg-product">咨询产品</label>
+                        <input type="text" id="msg-product" name="subject" placeholder="您想了解的产品或需求（选填）">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="msg-content">留言内容 *</label>
+                        <textarea id="msg-content" name="content" required 
+                                  placeholder="请详细描述您的需求或问题，我们会尽快回复..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn--primary btn--large" style="width:100%;" id="submit-btn">
+                        提交留言
+                    </button>
+                    <p style="text-align:center;font-size:13px;color:var(--color-text-tertiary);margin-top:12px;">
+                        我们将在24小时内回复您的留言
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container" style="text-align:center;padding:40px 0;"><img src="/images/logo.png" alt="SORAN" style="height:28px;filter:brightness(0)invert(1);"><p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:12px;">© SORAN 索然电梯配件</p></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/main.js"></script>
+<script>
+// Load contact info from API
+document.addEventListener('DOMContentLoaded', async () => {
+    const res = await fetchAPI('/config');
+    if (res.success && res.data) {
+        const c = res.data;
+        if (c.phone) document.getElementById('contact-phone').textContent = c.phone;
+        if (c.email) document.getElementById('contact-email').innerHTML = `<a href="mailto:${c.email}">${c.email}</a>`;
+        if (c.address) document.getElementById('contact-address').textContent = c.address;
+        if (c.wechat) document.getElementById('contact-wechat').textContent = c.wechat;
+
+        // Hide empty contact items
+        ['phone','email','address','wechat'].forEach(key => {
+            const el = document.getElementById(`ci-${key}`);
+            if (!c[key]) el.style.display = 'none';
+        });
+
+        // Pre-fill product field from URL param
+        const urlParams = new URLSearchParams(location.search);
+        const productParam = urlParams.get('product');
+        if (productParam) document.getElementById('msg-product').value = productParam;
+    }
+});
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('submit-btn');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '提交中...';
+
+    const form = document.getElementById('contact-form');
+    const formData = new FormData(form);
+
+    const res = await fetchAPI('/messages', {
+        method: 'POST',
+        body: JSON.stringify({
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            email: formData.get('email'),
+            company: formData.get('company'),
+            subject: formData.get('subject'),
+            content: formData.get('content')
+        })
+    });
+
+    if (res.success) {
+        showToast(res.message || '留言提交成功！');
+        form.reset();
+    } else {
+        showToast(res.message || '提交失败，请重试');
+    }
+
+    btn.disabled = false;
+    btn.textContent = originalText;
+}
+</script>
+</body>
+</html>

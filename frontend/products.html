@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>产品中心 - SORAN 索然电梯配件</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+    <div class="header-inner">
+        <a href="/" class="header-logo">
+            <img src="/images/logo.png" alt="SORAN"><span>SORAN</span>
+        </a>
+        <nav class="header-nav">
+            <a href="/">首页</a>
+            <a href="/products" class="active">产品中心</a>
+            <a href="/about">关于索然</a>
+            <a href="/contact">联系我们</a>
+        </nav>
+        <div class="menu-toggle" aria-label="菜单"><span></span><span></span><span></span></div>
+    </div>
+</header>
+<div class="mobile-nav"><a href="/">首页</a><a href="/products">产品中心</a><a href="/about">关于索然</a><a href="/contact">联系我们</a></div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <h1>产品中心</h1>
+    <p>探索索然全系列电梯配件产品，找到最适合您的解决方案</p>
+</section>
+
+<!-- Filter Bar -->
+<div class="filter-bar" id="filter-bar" style="display:none;">
+    <div class="filter-bar-inner" id="category-filters">
+        <!-- JS动态填充 -->
+    </div>
+</div>
+
+<!-- Products Grid -->
+<section class="section">
+    <div class="container">
+        <div class="product-grid" id="product-list">
+            <div style="grid-column: 1/-1; text-align:center; padding:80px 0;">
+                <div class="loading-spinner"></div>
+                <p style="color:var(--color-text-tertiary);margin-top:16px;">加载中...</p>
+            </div>
+        </div>
+        <div id="pagination" style="display:flex;justify-content:center;gap:10px;margin-top:44px;flex-wrap:wrap;"></div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container" style="text-align:center;padding:40px 0;">
+        <img src="/images/logo.png" alt="SORAN" style="height:32px;filter:brightness(0)invert(1);margin-bottom:16px;">
+        <p style="font-size:14px;color:rgba(255,255,255,0.5);">© <span id="year"></span> 广州索然电梯配件有限公司 版权所有</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/main.js"></script>
+<script>
+let currentPage = 1;
+let currentCategory = 'all';
+const pageSize = 12;
+
+async function loadProducts(page = 1, category = 'all') {
+    const container = document.getElementById('product-list');
+    container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:80px 0;"><div class="loading-spinner"></div></div>';
+
+    let url = `/products?page=${page}&limit=${pageSize}`;
+    if (category !== 'all') url += `&category=${category}`;
+
+    const res = await fetchAPI(url);
+    
+    if (res.success && res.data?.length > 0) {
+        renderProductCards(res.data, 'product-list');
+        if (res.pagination && res.pagination.totalPages > 1) {
+            renderPagination(res.pagination);
+        } else {
+            document.getElementById('pagination').innerHTML = '';
+        }
+    } else {
+        container.innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1;">
+                <div class="icon">📦</div>
+                <p>暂无产品数据</p>
+                <a href="/contact" class="btn btn--primary btn--small" style="margin-top:16px;">联系我们获取更多信息</a>
+            </div>`;
+        document.getElementById('pagination').innerHTML = '';
+    }
+}
+
+function renderPagination(pagination) {
+    const el = document.getElementById('pagination');
+    let html = '';
+    
+    if (pagination.current > 1) {
+        html += `<button class="btn btn--small btn--outline" onclick="loadProducts(${pagination.current - 1}, currentCategory)">← 上一页</button>`;
+    }
+
+    for (let i = Math.max(1, pagination.current - 2); i <= Math.min(pagination.totalPages, pagination.current + 2); i++) {
+        html += `<button class="btn btn--small ${i === pagination.current ? 'btn--primary' : 'btn--outline'}" 
+                     onclick="loadProducts(${i}, currentCategory)">${i}</button>`;
+    }
+
+    if (pagination.current < pagination.totalPages) {
+        html += `<button class="btn btn--small btn--outline" onclick="loadProducts(${pagination.current + 1}, currentCategory)">下一页 →</button>`;
+    }
+
+    el.innerHTML = html;
+}
+
+// Load categories for filter
+document.addEventListener('DOMContentLoaded', async () => {
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 加载分类
+    const catRes = await fetchAPI('/categories');
+    if (catRes.success && catRes.data?.length > 0) {
+        const filterBar = document.getElementById('filter-bar');
+        filterBar.style.display = '';
+        
+        let html = `<button class="filter-btn active" data-cat="all">全部</button>`;
+        catRes.data.forEach(c => {
+            html += `<button class="filter-btn" data-cat="${c.id}">${c.name}</button>`;
+        });
+        
+        document.getElementById('category-filters').innerHTML = html;
+
+        // Filter click events
+        filterBar.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.cat;
+                loadProducts(1, currentCategory);
+            });
+        });
+    }
+
+    // Load products
+    await loadProducts(1, 'all');
+});
+</script>
+</body>
+</html>

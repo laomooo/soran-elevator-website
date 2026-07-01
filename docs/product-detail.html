@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="索然电梯配件 - 产品详情，查看技术参数、产品描述，获取高品质电梯配件信息。">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>产品详情 - SORAN 索然电梯配件</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+    <div class="header-inner">
+        <a href="./" class="header-logo"><img src="images/logo.png" class="soran-logo" alt="SORAN"><span>SORAN</span></a>
+        <nav class="header-nav"><a href="./">首页</a><a href="products.html">产品中心</a><a href="about.html">关于索然</a><a href="contact.html">联系我们</a></nav>
+        <button class="menu-toggle" aria-label="菜单" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+</header>
+
+<div class="mobile-nav">
+    <a href="./">首页</a>
+    <a href="products.html">产品中心</a>
+    <a href="about.html">关于索然</a>
+    <a href="contact.html">联系我们</a>
+</div>
+
+<!-- Product Detail Hero -->
+<section class="detail-hero">
+    <div class="container">
+        <div class="detail-grid" id="detail-content">
+            <div style="text-align:center;padding:60px 20px;grid-column:1/-1;"><div class="loading-spinner"></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+<section class="section section--gray" id="related-section" style="display:none;">
+    <div class="container">
+        <h2 class="text-title" style="text-align:center;margin-bottom:40px;">相关推荐</h2>
+        <div class="product-grid" id="related-products"></div>
+    </div>
+</section>
+
+<footer class="footer"><div class="container" style="text-align:center;padding:40px 0;"><img src="images/logo.png" alt="SORAN" class="soran-logo" style="height:32px;"><p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:12px;">© SORAN 索然电梯配件</p></div></footer>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script defer src="js/supabase-client.js"></script>
+<script defer src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(location.search);
+    const productId = urlParams.get('id');
+
+    if (!productId) {
+        document.getElementById('detail-content').innerHTML =
+            '<div class="empty-state"><div class="icon">😕</div><h3>缺少产品参数</h3><a href="products.html" class="btn btn--primary">返回产品列表</a></div>';
+        return;
+    }
+
+    const res = await fetchAPI(`/products/${productId}`);
+    
+    if (!res.success || !res.data) {
+        document.getElementById('detail-content').innerHTML =
+            '<div class="empty-state"><div class="icon">😕</div><h3>产品不存在或已下架</h3><a href="products.html" class="btn btn--primary">返回产品列表</a></div>';
+        return;
+    }
+
+    const p = res.data;
+    const images = Array.isArray(p.image_urls) ? p.image_urls : [];
+    if (p.main_image && !images.includes(p.main_image)) images.unshift(p.main_image);
+    if (!images.length) images.push('https://via.placeholder.com/800x600?text=' + encodeURIComponent(p.name));
+    
+    const specs = typeof p.specifications === 'object' ? p.specifications : {};
+
+    document.title = `${p.name}${p.model_number ? ` (${p.model_number})` : ''} - SORAN 索然电梯配件`;
+
+    // Render gallery
+    let thumbsHtml = images.slice(0, 6).map((img, i) =>
+        `<div class="detail-thumb ${i === 0 ? 'active' : ''}" data-img="${img}">
+             <img src="${img}" alt="" loading="lazy">
+         </div>`
+    ).join('');
+
+    // Render spec table
+    let specsHtml = '';
+    if (specs && Object.keys(specs).length > 0) {
+        specsHtml = Object.entries(specs).map(([k, v]) =>
+            `<span class="spec-label">${k}</span><span class="spec-value">${v}</span>`
+        ).join('');
+    } else if (p.model_number || p.short_desc) {
+        specsHtml = `
+            ${p.model_number ? `<span class="spec-label">型号</span><span class="spec-value">${p.model_number}</span>` : ''}
+            <span class="spec-label">分类</span><span class="spec-value">${p.category_name || '-'}</span>
+            ${p.short_desc ? `<span class="spec-label">简述</span><span class="spec-value">${p.short_desc}</span>` : ''}
+        `;
+    }
+
+    document.getElementById('detail-content').innerHTML = `
+        <div class="detail-gallery">
+            <div class="detail-gallery-main">
+                <img id="main-image" src="${images[0]}" alt="${p.name}">
+            </div>
+            ${thumbsHtml.length > 1 ? `<div class="detail-thumbs">${thumbsHtml}</div>` : ''}
+        </div>
+        <div class="detail-info">
+            <h1>${p.name}</h1>
+            ${p.model_number ? `<span class="detail-model">${p.model_number}</span>` : ''}
+            <p class="detail-desc">${p.full_desc || p.short_desc || p.short_desc_en || p.full_desc_en || '暂无详细描述'}</p>
+            
+            ${specsHtml ? `
+            <div class="detail-specs">
+                <h3>技术参数</h3>
+                <div class="spec-table">${specsHtml}</div>
+            </div>` : ''}
+            
+            <div class="detail-actions">
+                <a href="contact.html?product=${encodeURIComponent(p.name)}" class="btn btn--primary btn--large">咨询此产品</a>
+                <a href="products.html" class="btn btn--outline btn--large">← 返回列表</a>
+            </div>
+        </div>`;
+
+    // Gallery thumb click
+    document.querySelectorAll('.detail-thumb').forEach(thumb => {
+        thumb.addEventListener('click', () => {
+            document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+            document.getElementById('main-image').src = thumb.dataset.img;
+        });
+    });
+
+    // Load related products
+    if (p.category_id) {
+        const relatedRes = await fetchAPI(`/products?category=${p.category_id}&limit=4`);
+        if (relatedRes.success && relatedRes.data?.length > 1) {
+            const filtered = relatedRes.data.filter(item => item.id != p.id).slice(0, 4);
+            if (filtered.length > 0) {
+                document.getElementById('related-section').style.display = '';
+                renderProductCards(filtered, 'related-products');
+            }
+        }
+    }
+});
+</script>
+</body>
+</html>
