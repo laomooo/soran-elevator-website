@@ -68,36 +68,44 @@
         }
         if (!ts) return;
 
+        // 标题颜色（含所有标题级别 + 自定义类）
         if (ts.headingColor) {
-            var headings = el.querySelectorAll('h1, h2, h3, .text-title, .feature-item__title');
+            var headings = el.querySelectorAll('h1, h2, h3, h4, .text-title, .feature-item__title, .hero-title');
             headings.forEach(function(h) { h.style.color = ts.headingColor; });
         }
+        // 正文颜色
         if (ts.color) {
             var texts = el.querySelectorAll('p, span, .text-body, .text-body-large, .hero-subtitle, .feature-item__desc');
             texts.forEach(function(t) { t.style.color = ts.color; });
         }
+        // 字体大小（含标题）
         if (ts.size) {
-            var allText = el.querySelectorAll('p, span, li, .text-body');
+            var allText = el.querySelectorAll('h1, h2, h3, h4, p, span, li, .text-body, .text-title, .feature-item__title, .hero-title');
             allText.forEach(function(t) { t.style.fontSize = ts.size; });
         }
+        // 文字对齐
         if (ts.align && ts.align !== 'left') {
-            var containers = el.querySelectorAll('.container, .feature-grid, .hero-content');
+            var containers = el.querySelectorAll('.container, .feature-grid, .hero-content, section');
             containers.forEach(function(c) { c.style.textAlign = ts.align; });
         }
+        // 字重（含标题）
         if (ts.weight) {
-            var allText = el.querySelectorAll('p, span, li');
+            var allText = el.querySelectorAll('h1, h2, h3, h4, p, span, li, .text-title, .feature-item__title, .hero-title');
             allText.forEach(function(t) { t.style.fontWeight = ts.weight; });
         }
+        // 字体族（含所有元素）
         if (ts.fontFamily) {
-            var allText = el.querySelectorAll('p, span, li, h1, h2, h3, div');
+            var allText = el.querySelectorAll('*');
             allText.forEach(function(t) { t.style.fontFamily = ts.fontFamily; });
         }
+        // 行高（含标题）
         if (ts.lineHeight) {
-            var allText = el.querySelectorAll('p, span, li');
+            var allText = el.querySelectorAll('h1, h2, h3, h4, p, span, li, .text-title, .feature-item__title, .hero-title');
             allText.forEach(function(t) { t.style.lineHeight = ts.lineHeight; });
         }
+        // 字间距（含标题）
         if (ts.letterSpacing) {
-            var allText = el.querySelectorAll('p, span, li, h1, h2, h3');
+            var allText = el.querySelectorAll('h1, h2, h3, h4, p, span, li, .text-title, .feature-item__title, .hero-title');
             allText.forEach(function(t) { t.style.letterSpacing = ts.letterSpacing; });
         }
     }
@@ -109,7 +117,7 @@
         var map = {
             'body':       document.body,
             'header':     document.querySelector('.header'),
-            'hero':       document.querySelector('.hero-bg') || document.querySelector('.hero'),
+            'hero':       document.querySelector('.hero') || document.querySelector('.hero-bg'),
             'banner':     document.querySelector('.banner-carousel') && document.querySelector('.banner-carousel').closest('.section'),
             'products':   document.getElementById('products-section'),
             'features':   document.querySelector('[data-section="features"]'),

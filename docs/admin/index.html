@@ -160,7 +160,7 @@
             <div class="admin-card" style="margin-top:20px;">
                 <div class="card-header">
                     <h3>📁 产品分类</h3>
-                    <button class="btn-admin btn--primary" onclick="openCategoryModal()">+ 添加分类</button>
+                    <button class="btn-admin btn--primary" onclick="openCatQuickModal()">+ 添加分类</button>
                 </div>
                 <div class="card-body">
                     <div id="categories-quick-list" style="display:flex;flex-wrap:wrap;gap:8px;">
@@ -296,7 +296,7 @@
             <div class="admin-card">
                 <div class="card-header">
                     <h3>产品分类</h3>
-                    <button class="btn-admin btn--primary" onclick="openCategoryModal()">+ 添加分类</button>
+                    <button class="btn-admin btn--primary" onclick="openCatQuickModal()">+ 添加分类</button>
                 </div>
                 <div class="card-body">
                     <table class="data-table" id="categories-table">
@@ -841,7 +841,7 @@ function openCategoryModal(id = null) {
     
     document.getElementById('category-modal').classList.add('show');
 }
-function editCategory(id) { openCategoryModal(id); }
+function editCategory(id) { openCatQuickModal(id); }
 function editBanner(id) { openBannerModal(id); }
 
 async function saveCategory(e) {
