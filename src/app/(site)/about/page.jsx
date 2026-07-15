@@ -52,7 +52,7 @@ export default async function AboutPage() {
               <AnimatedSection direction="left" delay={0.1}>
                 <div className="card p-6 hover:-translate-y-1 transition-transform duration-300">
                   <div className="text-3xl font-bold text-brand-primary mb-1">{info.founded_year}</div>
-                  <div className="text-sm text-ink-500">年成立，行业深耕</div>
+                  <div className="text-sm text-ink-500">成立，行业深耕</div>
                 </div>
               </AnimatedSection>
               <AnimatedSection direction="left" delay={0.15}>
