@@ -20,7 +20,7 @@ export default async function Footer() {
               </div>
             </div>
             <p className="text-sm leading-relaxed mb-4 max-w-md">
-              {info.full_name}，创立于 {info.founded_year} 年，集研发、生产、销售与服务于一体的科技型创新企业，专注电梯配件供应与技术服务。
+              {info.full_name}，创立于 {info.founded_year}，集研发、生产、销售与服务于一体的科技型创新企业，专注电梯配件供应与技术服务。
             </p>
             <p className="text-sm text-brand-light">{info.slogan}</p>
           </div>
