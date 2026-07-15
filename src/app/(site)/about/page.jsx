@@ -34,7 +34,7 @@ export default async function AboutPage() {
                 <h2 className="text-2xl lg:text-3xl mb-6 text-ink-900">公司简介</h2>
                 <div className="prose prose-lg max-w-none text-ink-700 leading-relaxed space-y-4">
                   <p>
-                    <strong>{info.full_name}</strong>（{info.full_name_en}）创立于 {info.founded_year} 年，是一家集研发、生产、销售与服务于一体的科技型创新企业，专注于提供电梯部件及技术服务支持。
+                    <strong>{info.full_name}</strong>（{info.full_name_en}）创立于 {info.founded_year}，是一家集研发、生产、销售与服务于一体的科技型创新企业，专注于提供电梯部件及技术服务支持。
                   </p>
                   <p>
                     公司主营各大主流电梯品牌零部件，是行业内多家龙头电梯部件生产企业的核心代理商，一站式解决用户所有电梯部件采购需求；同时自主研发生产电梯空调、梯控系统等加装类产品。
